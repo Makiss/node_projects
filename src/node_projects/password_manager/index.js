@@ -26,9 +26,9 @@ const main = async () => {
   }
 };
 
-const saveNewPassword = async (password) => {
-  const hash = bcrypt.hashSync(password, 10);
-  await authCollection.insertOne({ type: "auth", hash });
+const saveNewPassword = async (password, saltRounds = 10) => {
+  const hash = bcrypt.hashSync(password, saltRounds);
+  await authCollection.insertOne({ type: "auth", hash, saltRounds });
   console.log("Password has been saved!");
 
   await showMenu();
@@ -42,8 +42,9 @@ const compareHashedPassword = async (password) => {
 
 const promptNewPassword = () => {
   const response = prompt("Enter a main password: ");
+  const saltRounds = prompt("Enter salt rounds count (defaults to 10): ", 10);
 
-  return saveNewPassword(response);
+  return saveNewPassword(response, saltRounds);
 };
 
 const promptOldPassword = async () => {
@@ -68,7 +69,8 @@ const showMenu = async () => {
     1. View passwords
     2. Manage new password
     3. Verify password
-    4. Exit    
+    4. Find password by name 
+    5. Exit 
         `);
   const response = prompt(">");
 
@@ -83,11 +85,26 @@ const showMenu = async () => {
       await promptOldPassword();
       break;
     case "4":
+      await promptPasswordBySource();
+      break;
+    case "5":
       process.exit();
     default:
       console.log(`That's an invalid response.`);
       await showMenu();
   }
+};
+
+const promptPasswordBySource = async () => {
+  const source = prompt("Enter name to find password for: ");
+  const { password } = await passwordsCollection.findOne({ source });
+
+  if (password) {
+    console.log(`${source} => ${password}`);
+  } else {
+    console.log("No password saved for that source.");
+  }
+  await showMenu();
 };
 
 const viewPasswords = async () => {
