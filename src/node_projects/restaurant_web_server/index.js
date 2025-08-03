@@ -42,8 +42,14 @@ app.get("/hours", async (req, res) => {
     "saturday",
     "sunday",
   ];
+  const currentDay = new Date().getDay();
+  const today = currentDay === 0 ? 6 : currentDay - 1;
 
-  return res.view("views/hours.ejs", { operatingHours, days });
+  return res.view("views/hours.ejs", { operatingHours, days, today });
+});
+
+app.get("/about", async (req, res) => {
+  return res.view("views/about.ejs");
 });
 
 await app.listen({ port: PORT }, (err, address) => {

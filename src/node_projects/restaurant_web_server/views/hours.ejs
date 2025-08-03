@@ -2,15 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Restaurant</title>
+    <title>Working Hours</title>
   </head>
   <body>
     <h1>Our Hours</h1>
-    <% for (let day of days) { %> <% const hoursObj = operatingHours[day] ||
-    operatingHours['defaultHours'] %>
+    <% for (let dayIndex in days) { %> <% const day = days[dayIndex]; const
+    hoursObj = operatingHours[day] || operatingHours['defaultHours'] %>
     <section style="display: inline-flex; flex-direction: column; padding: 5px">
-      <h2><%= day.toUpperCase() %></h2>
-      <div>
+      <h2 style="font-style: <%= today == dayIndex ? 'italic' : 'normal' %>">
+        <%= day.toUpperCase() %>
+      </h2>
+      <div style="font-style: <%= today == dayIndex ? 'italic' : 'normal' %>">
         <% if (hoursObj.open) { %>
         <p>Open: <%= hoursObj.open %></p>
         <p>Closed: <%= hoursObj.closed %></p>

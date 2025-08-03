@@ -2,18 +2,119 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Restaurant</title>
+    <title>Restaurant Menu</title>
+    <style>
+      .menu-item {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+      }
+      .expensive {
+        border-left: 4px solid #ff6b6b;
+      }
+      .affordable {
+        border-left: 4px solid #51cf66;
+      }
+      .premium {
+        background-color: #fff3cd;
+      }
+      .sold-out {
+        opacity: 0.6;
+        background-color: #f8f9fa;
+      }
+      .special-offer {
+        background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+      }
+      .price-high {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+      .price-medium {
+        color: #f39c12;
+      }
+      .price-low {
+        color: #27ae60;
+      }
+    </style>
   </head>
   <body>
     <h1>Our Menu</h1>
-    <ol>
-      <% for (let item of menuItems) { %>
-      <li>
-        <strong><%= item.name %></strong>
-        <span><%= item.description %></span>
-        <span>$<%= item.cost %></span>
-      </li>
+
+    <% menuItems.forEach(function(item) { %>
+    <div
+      class="menu-item <%= item.cost > 10 ? 'expensive' : 'affordable' %> <%= item.isPremium ? 'premium' : '' %> <%= item.isAvailable === false ? 'sold-out' : '' %> <%= item.isSpecialOffer ? 'special-offer' : '' %>"
+    >
+      <h3><%= item.name %></h3>
+      <p><%= item.description %></p>
+
+      <!-- Conditional price styling -->
+      <p
+        class="price <%= item.cost > 10 ? 'price-high' : item.cost > 7 ? 'price-medium' : 'price-low' %>"
+      >
+        $<%= item.cost.toFixed(2) %> <% if (item.isSpecialOffer) { %>
+        <span
+          style="
+            background: red;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+          "
+        >
+          SPECIAL!
+        </span>
+        <% } %>
+      </p>
+
+      <!-- Conditional availability message -->
+      <% if (item.isAvailable === false) { %>
+      <p style="color: #dc3545; font-weight: bold">Currently Sold Out</p>
+      <% } else if (item.isLowStock) { %>
+      <p style="color: #fd7e14">Limited Availability</p>
       <% } %>
-    </ol>
+
+      <!-- Conditional dietary information -->
+      <div style="margin-top: 10px">
+        <% if (item.isVegetarian) { %>
+        <span
+          style="
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7em;
+          "
+        >
+          VEGETARIAN
+        </span>
+        <% } %> <% if (item.isVegan) { %>
+        <span
+          style="
+            background: #17a2b8;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7em;
+          "
+        >
+          VEGAN
+        </span>
+        <% } %> <% if (item.isGlutenFree) { %>
+        <span
+          style="
+            background: #ffc107;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7em;
+          "
+        >
+          GLUTEN FREE
+        </span>
+        <% } %>
+      </div>
+    </div>
+    <% }); %>
   </body>
 </html>
