@@ -7,11 +7,11 @@ prompt.message = "";
 
 const csvWriter = createObjectCsvWriter({
   path: "./contacts.csv",
-  append: existsSync("./contacts.csv"),
   header: [
     { id: "name", title: "NAME" },
     { id: "number", title: "NUMBER" },
     { id: "email", title: "EMAIL" },
+    { id: "createdAt", title: "CREATED_AT" },
   ],
 });
 
@@ -20,12 +20,13 @@ class Person {
     this.name = name;
     this.number = number;
     this.email = email;
+    this.createdAt = new Date().toISOString();
   }
 
   async saveToCSV() {
     try {
-      const { name, number, email } = this;
-      await csvWriter.writeRecords([{ name, number, email }]);
+      const { name, number, email, createdAt } = this;
+      await csvWriter.writeRecords([{ name, number, email, createdAt }]);
       console.log(`${this.name} Saved!`);
     } catch (e) {
       console.error(e);
@@ -35,9 +36,21 @@ class Person {
 
 const startApp = async () => {
   const questions = [
-    { name: "name", description: "Contact Name" },
-    { name: "number", description: "Contact Number" },
-    { name: "email", description: "Contact Email" },
+    { name: "name", description: "Contact Name", required: true },
+    {
+      name: "number",
+      description: "Contact Number",
+      pattern: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
+      message: "Wrong phone number format",
+      required: true,
+    },
+    {
+      name: "email",
+      description: "Contact Email",
+      pattern: /^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/,
+      message: "Wrong email format",
+      required: true,
+    },
   ];
 
   const responses = await prompt.get(questions);
