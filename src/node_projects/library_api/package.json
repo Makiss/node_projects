@@ -14,7 +14,9 @@
   "description": "",
   "dependencies": {
     "@fastify/formbody": "^8.0.2",
-    "fastify": "^5.4.0"
+    "fastify": "^5.4.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

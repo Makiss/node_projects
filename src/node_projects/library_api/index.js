@@ -1,10 +1,12 @@
 import Fastify from "fastify";
 
 import formBody from "@fastify/formbody";
+import routes from "./routes/index.js";
 
+const PORT = process.env.PORT || 3000;
 const app = Fastify();
 await app.register(formBody);
-const PORT = process.env.PORT || 3000;
+app.register(routes, { prefix: "/api" });
 
 app.get("/", (_req, res) => {
   res.send({ message: "ok" });
