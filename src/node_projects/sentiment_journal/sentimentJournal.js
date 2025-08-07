@@ -14,6 +14,12 @@ prompt.start({});
 prompt.message = "";
 
 class SentimentJournal {
+  constructor() {
+    this.sentiment = new Sentiment();
+    this.scores = [0];
+    this.entry = "";
+  }
+
   correctSpelling(str) {
     const words = str.split(" ");
     const corrections = [];
@@ -21,19 +27,21 @@ class SentimentJournal {
     for (let word of words) {
       if (SpellChecker.isMisspelled(word)) {
         const options = SpellChecker.getCorrectionsForMisspelling(word);
-        corrections.push(options[0]);
+        if (options.length > 0) {
+          const correctedWord = options[0];
+          corrections.push(correctedWord);
+          console.log(`Corrected "${word}" → "${correctedWord}"`);
+        } else {
+          corrections.push(word);
+          console.log(`No correction found for "${word}", keeping original`);
+        }
       } else {
         corrections.push(word);
+        console.log(`"${word}" is spelled correctly`);
       }
     }
 
     return corrections.join(" ");
-  }
-
-  constructor() {
-    this.sentiment = new Sentiment();
-    this.scores = [0];
-    this.entry = "";
   }
 
   async saveScore(score) {
@@ -78,10 +86,29 @@ class SentimentJournal {
     }
   }
 
+  get sentimentLabel() {
+    if (this.scores.length > 1) {
+      const recentScore = this.scores.at(-1);
+
+      if (recentScore > 0.3) {
+        return "Positive";
+      } else if (recentScore < -0.3) {
+        return "Negative";
+      } else {
+        return "Neutral";
+      }
+    } else {
+      return "No sentiment";
+    }
+  }
+
   printChart() {
     console.clear();
     this.setChartColor();
     console.log(asciichart.plot([this.scores], chartConfig));
+    const sentimentLabel = this.sentimentLabel;
+
+    console.log(sentimentLabel);
   }
 }
 
